@@ -30,6 +30,10 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Shlwapi.h> // For Path functions
 #include <Windows.h>
+#include <Commctrl.h> // For modern controls
+#include <Uxtheme.h> // For visual styles
+#include <vssym32.h> // For visual style constants
+#include <Richedit.h> // For rich edit controls and messages
 #include <filesystem>
 #include <mutex>
 #include <shlobj.h> // For Shell functions
@@ -42,6 +46,18 @@
 #include "WindowBase.h"
 #include "WolfUtils.h"
 #include "resource.h"
+
+// Link to the required libraries
+#pragma comment(lib, "UxTheme.lib")
+#pragma comment(lib, "Comctl32.lib")
+
+// UI Style Constants
+#define UI_BACKGROUND_COLOR RGB(245, 245, 250)
+#define UI_ACCENT_COLOR RGB(100, 120, 220)
+#define UI_TEXT_COLOR RGB(50, 50, 50)
+#define UI_BUTTON_HOVER_COLOR RGB(120, 140, 240)
+#define UI_DROPZONE_BORDER_COLOR RGB(180, 190, 240)
+#define UI_DROPZONE_BG_COLOR RGB(235, 240, 255)
 
 namespace fs = std::filesystem;
 
@@ -79,6 +95,130 @@ std::wstring ReplaceAll(const std::wstring& str, const std::wstring& from, const
 
 	return result;
 }
+
+// 设置控件的字体
+void SetControlFont(HWND hWnd, int fontSize = 9, bool isBold = false, const wchar_t* fontName = L"Segoe UI")
+{
+    LOGFONT lf = { 0 };
+    lf.lfHeight = -MulDiv(fontSize, GetDeviceCaps(GetDC(hWnd), LOGPIXELSY), 72);
+    lf.lfWeight = isBold ? FW_BOLD : FW_NORMAL;
+    lf.lfQuality = CLEARTYPE_QUALITY;
+    wcscpy_s(lf.lfFaceName, fontName);
+
+    HFONT hFont = CreateFontIndirect(&lf);
+    SendMessage(hWnd, WM_SETFONT, (WPARAM)hFont, TRUE);
+}
+
+// 设置按钮的现代样式
+void SetModernButtonStyle(HWND hButton)
+{
+    // 启用视觉样式
+    SetWindowTheme(hButton, L"Explorer", NULL);
+
+    // 设置按钮样式
+    LONG_PTR style = GetWindowLongPtr(hButton, GWL_STYLE);
+    style |= BS_FLAT;
+    SetWindowLongPtr(hButton, GWL_STYLE, style);
+
+    
+    SetControlFont(hButton, 9, true);
+}
+
+
+void SetModernEditStyle(HWND hEdit)
+{
+    
+    SetWindowTheme(hEdit, L"Explorer", NULL);
+
+    
+    SetControlFont(hEdit, 9, false);
+}
+
+// 设置标签的现代样式
+void SetModernLabelStyle(HWND hLabel)
+{
+    // 设置标签字体
+    SetControlFont(hLabel, 9, false);
+}
+
+// 自定义绘制拖放区域
+void DrawDropZone(HWND hWnd, HDC hdc)
+{
+    RECT rect;
+    GetClientRect(hWnd, &rect);
+
+    // 创建圆角矩形区域
+    int radius = 10;
+    HBRUSH hBrush = CreateSolidBrush(UI_DROPZONE_BG_COLOR);
+    HPEN hPen = CreatePen(PS_SOLID, 2, UI_DROPZONE_BORDER_COLOR);
+
+    SelectObject(hdc, hBrush);
+    SelectObject(hdc, hPen);
+
+    // 绘制圆角矩形
+    RoundRect(hdc, rect.left, rect.top, rect.right, rect.bottom, radius, radius);
+
+    // 绘制文本
+    SetBkMode(hdc, TRANSPARENT);
+    SetTextColor(hdc, UI_TEXT_COLOR);
+
+    // 释放资源
+    DeleteObject(hBrush);
+    DeleteObject(hPen);
+}
+
+// 自定义绘制按钮
+LRESULT CALLBACK CustomButtonProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
+{
+    switch (uMsg)
+    {
+        case WM_PAINT:
+        {
+            PAINTSTRUCT ps;
+            HDC hdc = BeginPaint(hWnd, &ps);
+
+            // 获取按钮状态
+            LRESULT state = SendMessage(hWnd, BM_GETSTATE, 0, 0);
+            bool isPressed = (state & BST_PUSHED) != 0;
+            bool isHovered = (state & BST_HOT) != 0;
+
+            // 获取按钮文本
+            wchar_t text[256] = {0};
+            GetWindowText(hWnd, text, 256);
+
+            // 获取按钮区域
+            RECT rect;
+            GetClientRect(hWnd, &rect);
+
+            // 设置按钮颜色
+            COLORREF bgColor = isPressed ? UI_BUTTON_HOVER_COLOR : (isHovered ? UI_BUTTON_HOVER_COLOR : UI_ACCENT_COLOR);
+
+            // 创建圆角矩形区域
+            int radius = 5;
+            HBRUSH hBrush = CreateSolidBrush(bgColor);
+            SelectObject(hdc, hBrush);
+
+            // 绘制圆角矩形
+            RoundRect(hdc, rect.left, rect.top, rect.right, rect.bottom, radius, radius);
+
+            // 绘制文本
+            SetBkMode(hdc, TRANSPARENT);
+            SetTextColor(hdc, RGB(255, 255, 255));
+
+            // 居中绘制文本
+            DrawText(hdc, text, -1, &rect, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
+            // 释放资源
+            DeleteObject(hBrush);
+
+            EndPaint(hWnd, &ps);
+            return 0;
+        }
+    }
+
+    return DefSubclassProc(hWnd, uMsg, wParam, lParam);
+}
+
 } // namespace
 
 class ContentDialog : public WindowBase
@@ -90,9 +230,18 @@ public:
 		m_packConfig(hInstance, nullptr),
 		m_mutex()
 	{
+		// 初始化通用控件
+		INITCOMMONCONTROLSEX icex;
+		icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
+		icex.dwICC = ICC_WIN95_CLASSES | ICC_STANDARD_CLASSES;
+		InitCommonControlsEx(&icex);
+
 		setHandle(CreateDialogParamW(m_hInstance, MAKEINTRESOURCE(IDD_CONTENT), m_hWndParent, wndProc, 0));
 		registerLocalizedWindow();
 		ShowWindow(hWnd(), SW_SHOW);
+
+		// 设置对话框背景色
+		SetClassLongPtr(hWnd(), GCLP_HBRBACKGROUND, (LONG_PTR)CreateSolidBrush(UI_BACKGROUND_COLOR));
 
 		// Resize the main window to match the size of the embedded dialog
 		RECT rectDialog;
@@ -102,7 +251,11 @@ public:
 
 		SetWindowPos(m_hWndParent, NULL, 0, 0, dialogWidth, dialogHeight, SWP_NOMOVE | SWP_NOZORDER);
 
+		// 设置拖放区域的子类化过程
 		SetWindowSubclass(GetDlgItem(hWnd(), IDC_LABEL_DROP_FILE), dropProc, 0, (DWORD_PTR)hWnd());
+
+		// 美化各个控件
+		applyModernStyles();
 
 		registerSlot(IDC_OPTIONS, BN_CLICKED, [this]() { onOptionsClicked(); });
 		registerSlot(IDC_SELECT_GAME, BN_CLICKED, [this]() { onSelectGameClicked(); });
@@ -133,6 +286,55 @@ public:
 	}
 
 protected:
+	void applyModernStyles()
+	{
+		// 设置按钮样式
+		HWND hSelectGame = GetDlgItem(hWnd(), IDC_SELECT_GAME);
+		HWND hProcess = GetDlgItem(hWnd(), IDC_UNPACK);
+		HWND hPack = GetDlgItem(hWnd(), IDC_PACK);
+		HWND hOptions = GetDlgItem(hWnd(), IDC_OPTIONS);
+
+		// 应用自定义按钮样式
+		SetWindowSubclass(hSelectGame, CustomButtonProc, 1, 0);
+		SetWindowSubclass(hProcess, CustomButtonProc, 2, 0);
+		SetWindowSubclass(hPack, CustomButtonProc, 3, 0);
+		SetWindowSubclass(hOptions, CustomButtonProc, 4, 0);
+
+		// 设置编辑框样式
+		HWND hGameLocation = GetDlgItem(hWnd(), IDC_GAME_LOCATION);
+		HWND hProtectionKey = GetDlgItem(hWnd(), IDC_PROTECTION_KEY);
+		HWND hLog = GetDlgItem(hWnd(), IDC_LOG);
+
+		SetModernEditStyle(hGameLocation);
+		SetModernEditStyle(hProtectionKey);
+		SetModernEditStyle(hLog);
+
+		// 设置标签样式
+		HWND hLabelGameLocation = GetDlgItem(hWnd(), IDC_LABEL_GAME_LOCATION);
+		HWND hLabelProtectionKey = GetDlgItem(hWnd(), IDC_LABEL_PROTECTION_KEY);
+		HWND hLabelDropFile = GetDlgItem(hWnd(), IDC_LABEL_DROP_FILE);
+
+		SetModernLabelStyle(hLabelGameLocation);
+		SetModernLabelStyle(hLabelProtectionKey);
+		SetModernLabelStyle(hLabelDropFile);
+
+		// 美化拖放区域
+		HWND hDropZone = GetDlgItem(hWnd(), IDC_LABEL_DROP_FILE);
+
+		// 设置拖放区域的背景色
+		HBRUSH hBrush = CreateSolidBrush(UI_DROPZONE_BG_COLOR);
+		SetClassLongPtr(hDropZone, GCLP_HBRBACKGROUND, (LONG_PTR)hBrush);
+
+		// 设置拖放区域的边框
+		LONG_PTR style = GetWindowLongPtr(hDropZone, GWL_EXSTYLE);
+		style |= WS_EX_STATICEDGE;
+		SetWindowLongPtr(hDropZone, GWL_EXSTYLE, style);
+
+		
+		HBRUSH hLogBrush = CreateSolidBrush(RGB(250, 250, 255));
+		SetClassLongPtr(hLog, GCLP_HBRBACKGROUND, (LONG_PTR)hLogBrush);
+	}
+
 	void updateLocalization()
 	{
 		// Drop Label
@@ -406,12 +608,75 @@ private:
 	static LRESULT CALLBACK dropProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
 	{
 		const HWND hParent = (HWND)dwRefData;
+		static bool isHovered = false;
 
 		switch (uMsg)
 		{
+			case WM_PAINT:
+			{
+				PAINTSTRUCT ps;
+				HDC hdc = BeginPaint(hWnd, &ps);
+
+				// 绘制拖放区域
+				DrawDropZone(hWnd, hdc);
+
+				// 获取文本
+				wchar_t text[512] = {0};
+				GetWindowText(hWnd, text, 512);
+
+				// 获取客户区域
+				RECT rect;
+				GetClientRect(hWnd, &rect);
+
+				// 设置文本颜色和背景模式
+				SetTextColor(hdc, UI_TEXT_COLOR);
+				SetBkMode(hdc, TRANSPARENT);
+
+				// 设置字体
+				HFONT hFont = CreateFont(-14, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
+					DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+					CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE, L"Segoe UI");
+				HFONT hOldFont = (HFONT)SelectObject(hdc, hFont);
+
+				// 绘制文本
+				DrawText(hdc, text, -1, &rect, DT_CENTER | DT_VCENTER | DT_WORDBREAK);
+
+				// 恢复原来的字体
+				SelectObject(hdc, hOldFont);
+				DeleteObject(hFont);
+
+				EndPaint(hWnd, &ps);
+				return 0;
+			}
+
 			case WM_DROPFILES:
 				if (WindowBase::ProcessMessage(hParent, GetDlgCtrlID(hWnd), uMsg, wParam, lParam))
 					return TRUE;
+				break;
+
+			case WM_MOUSEMOVE:
+				if (!isHovered)
+				{
+					isHovered = true;
+
+					// 创建跟踪结构
+					TRACKMOUSEEVENT tme;
+					tme.cbSize = sizeof(TRACKMOUSEEVENT);
+					tme.dwFlags = TME_LEAVE;
+					tme.hwndTrack = hWnd;
+					tme.dwHoverTime = HOVER_DEFAULT;
+					TrackMouseEvent(&tme);
+
+					// 重绘控件
+					InvalidateRect(hWnd, NULL, TRUE);
+				}
+				break;
+
+			case WM_MOUSELEAVE:
+				isHovered = false;
+
+				// 重绘控件
+				InvalidateRect(hWnd, NULL, TRUE);
 				break;
 		}
 
