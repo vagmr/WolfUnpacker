@@ -139,6 +139,80 @@ void ContentDialog::applyModernStyles()
     LONG_PTR style = GetWindowLongPtr(hDropZone, GWL_STYLE);
     style |= SS_NOTIFY; // 确保标签能够接收鼠标消息
     SetWindowLongPtr(hDropZone, GWL_STYLE, style);
+
+    // 调整控件间距和布局
+
+    // 获取对话框客户区域
+    RECT dlgRect;
+    GetClientRect(hWnd(), &dlgRect);
+    int dlgWidth = dlgRect.right - dlgRect.left;
+    int dlgHeight = dlgRect.bottom - dlgRect.top;
+
+    // 调整拖放区域大小和位置
+    RECT dropRect;
+    GetWindowRect(hDropZone, &dropRect);
+    POINT dropPt = { dropRect.left, dropRect.top };
+    ScreenToClient(hWnd(), &dropPt);
+    int dropWidth = dlgWidth - 40; // 左右各留20像素的边距
+    int dropHeight = 80; // 减小高度为80像素
+    SetWindowPos(hDropZone, NULL, 20, 15, dropWidth, dropHeight, SWP_NOZORDER);
+
+    // 调整标签和编辑框的位置
+    RECT labelRect;
+    GetWindowRect(hLabelGame, &labelRect);
+    POINT labelPt = { labelRect.left, labelRect.top };
+    ScreenToClient(hWnd(), &labelPt);
+
+    // 调整游戏位置标签和编辑框
+    int labelY = 15 + dropHeight + 15; // 拖放区域下方15像素
+    SetWindowPos(hLabelGame, NULL, 20, labelY, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+
+    RECT editRect;
+    GetWindowRect(hGameLocation, &editRect);
+    POINT editPt = { editRect.left, editRect.top };
+    ScreenToClient(hWnd(), &editPt);
+    int editWidth = dlgWidth - 20 - 20 - 100 - 10; // 对话框宽度减去左右边距、按钮宽度和间距
+    SetWindowPos(hGameLocation, NULL, 20, labelY + 20, editWidth, 26, SWP_NOZORDER); // 减小高度为26像素
+
+    // 调整选择游戏按钮
+    RECT btnRect;
+    GetWindowRect(hSelectGame, &btnRect);
+    POINT btnPt = { btnRect.left, btnRect.top };
+    ScreenToClient(hWnd(), &btnPt);
+    SetWindowPos(hSelectGame, NULL, 20 + editWidth + 10, labelY + 20, 100, 26, SWP_NOZORDER); // 按钮高度与编辑框一致
+
+    // 调整保护密钥标签和编辑框
+    int keyLabelY = labelY + 20 + 26 + 10; // 游戏位置编辑框下方10像素
+    SetWindowPos(hLabelKey, NULL, 20, keyLabelY, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+    SetWindowPos(hProtectionKey, NULL, 20, keyLabelY + 20, dlgWidth - 40, 26, SWP_NOZORDER); // 减小高度为26像素
+
+    // 调整日志标签
+    int logLabelY = keyLabelY + 20 + 26 + 10; // 保护密钥编辑框下方10像素
+    SetWindowPos(hLabelLog, NULL, 20, logLabelY, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+
+    // 调整日志编辑框
+    int logY = logLabelY + 20;
+    int logHeight = dlgHeight - logY - 15 - 32 - 10; // 对话框底部留出15像素，按钮高度32像素，按钮上方10像素
+    SetWindowPos(hLog, NULL, 20, logY, dlgWidth - 40, logHeight, SWP_NOZORDER);
+
+    // 调整按钮位置
+    int btnY = dlgHeight - 15 - 32; // 对话框底部留出15像素，按钮高度32像素
+    int btnSpacing = 10; // 按钮之间的间距
+    int btnWidth = 100; // 按钮宽度
+
+    // 从右到左排列按钮
+    int rightX = dlgWidth - 20; // 最右边按钮的右边缘
+
+    // 选项按钮
+    SetWindowPos(hOptions, NULL, rightX - btnWidth, btnY, btnWidth, 32, SWP_NOZORDER);
+    rightX -= (btnWidth + btnSpacing);
+
+    // 打包按钮
+    SetWindowPos(hPack, NULL, rightX - btnWidth, btnY, btnWidth, 32, SWP_NOZORDER);
+    rightX -= (btnWidth + btnSpacing);
+
+    // 处理/解包按钮
+    SetWindowPos(hProcess, NULL, rightX - btnWidth, btnY, btnWidth, 32, SWP_NOZORDER);
 }
 
 void ContentDialog::updateLocalization()
@@ -389,9 +463,34 @@ INT_PTR CALLBACK ContentDialog::wndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPA
             if (WindowBase::ProcessCommand(hWnd, wParam))
                 return TRUE;
             break;
+
         case WM_INITDIALOG:
             updateLoc(hWnd);
             return TRUE;
+
+        case WM_CTLCOLORSTATIC:
+        {
+            HDC hdcStatic = (HDC)wParam;
+            HWND hwndStatic = (HWND)lParam;
+
+            // 获取控件ID
+            int ctrlID = GetDlgCtrlID(hwndStatic);
+
+            // 检查是否是标签控件
+            if (ctrlID == IDC_LABEL_GAME_LOCATION ||
+                ctrlID == IDC_LABEL_PROTECTION_KEY ||
+                ctrlID == IDC_LABEL_LOG)
+            {
+                // 设置标签文本颜色
+                SetTextColor(hdcStatic, UI_LABEL_COLOR);
+                SetBkColor(hdcStatic, UI_BACKGROUND_COLOR);
+
+                // 创建背景画刷
+                static HBRUSH hBrush = CreateSolidBrush(UI_BACKGROUND_COLOR);
+                return (INT_PTR)hBrush;
+            }
+            break;
+        }
     }
 
     return DefWindowProc(hWnd, uMsg, wParam, lParam);

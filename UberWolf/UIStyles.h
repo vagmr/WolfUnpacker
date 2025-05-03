@@ -35,13 +35,18 @@
 #pragma comment(lib, "UxTheme.lib")
 #pragma comment(lib, "Comctl32.lib")
 
-// UI Style Constants
-#define UI_BACKGROUND_COLOR RGB(245, 245, 250)
-#define UI_ACCENT_COLOR RGB(100, 120, 220)
-#define UI_TEXT_COLOR RGB(50, 50, 50)
-#define UI_BUTTON_HOVER_COLOR RGB(120, 140, 240)
-#define UI_DROPZONE_BORDER_COLOR RGB(180, 190, 240)
-#define UI_DROPZONE_BG_COLOR RGB(235, 240, 255)
+// UI Style Constants - 更现代的配色方案
+#define UI_BACKGROUND_COLOR RGB(248, 250, 252)  // 更亮的背景色
+#define UI_ACCENT_COLOR RGB(79, 70, 229)        // 靛蓝色作为主色调
+#define UI_TEXT_COLOR RGB(30, 41, 59)           // 深蓝灰色文本
+#define UI_BUTTON_HOVER_COLOR RGB(99, 102, 241) // 浅靛蓝色作为悬停色
+#define UI_BUTTON_PRESSED_COLOR RGB(67, 56, 202) // 深靛蓝色作为按下色
+#define UI_BUTTON_TEXT_COLOR RGB(255, 255, 255) // 按钮文本为白色
+#define UI_DROPZONE_BORDER_COLOR RGB(129, 140, 248) // 浅靛蓝色边框
+#define UI_DROPZONE_BG_COLOR RGB(224, 231, 255)  // 非常浅的靛蓝色背景
+#define UI_EDIT_BORDER_COLOR RGB(203, 213, 225) // 输入框边框颜色
+#define UI_EDIT_FOCUS_COLOR RGB(99, 102, 241)   // 输入框焦点颜色
+#define UI_LABEL_COLOR RGB(71, 85, 105)         // 标签文本颜色
 
 // 设置控件的字体
 void SetControlFont(HWND hWnd, int fontSize = 9, bool isBold = false, const wchar_t* fontName = L"Segoe UI");
