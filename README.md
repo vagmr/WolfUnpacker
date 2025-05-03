@@ -2,7 +2,7 @@
 
 English | [中文](README.cn.md)
  Fully functional, GUI-based Wolf RPG decrypter with support for Wolf RPG Pro.
-
+ ![](doc/UI2.png)
  ![](doc/UI.png)
 
 ### Features
