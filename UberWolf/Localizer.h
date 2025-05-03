@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  File: Localizer.h
  *  Copyright (c) 2024 Sinflower
  *
@@ -43,6 +43,13 @@
 #define LOC_LOAD(_LANG_)            Localizer::GetInstance().LoadLocalization(_LANG_)
 #define LOC_ADD_LANG(_LANG_, _RES_) Localizer::GetInstance().AddLanguage(_LANG_, _RES_)
 #define LOC_INIT()                  Localizer::GetInstance().Init()
+
+// 根据Unicode设置定义tString类型
+#ifdef UNICODE
+using tString = std::wstring;
+#else
+using tString = std::string;
+#endif
 
 namespace fs = std::filesystem;
 

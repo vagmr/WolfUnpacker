@@ -9,6 +9,7 @@
 	"process": "Process",
 	"pack": "Pack",
 	"select_game": "Select Game",
+	"select_game_title": "Select Game File",
 	"game_location": "Game Location",
 	"protection_key": "Protection Key",
 	"open_file": "Open File",

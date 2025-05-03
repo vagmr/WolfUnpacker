@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  File: WindowBase.h
  *  Copyright (c) 2023 Sinflower
  *
@@ -261,6 +261,4 @@ private:
 	int32_t m_id = -1;
 };
 
-int32_t WindowBase::s_idCounter = 0;
-std::map<HWND, class WindowBase*> WindowBase::s_windowMap;
-std::vector<class WindowBase*> WindowBase::s_localizedWindowList;
+// 静态成员变量的声明，定义在 WindowBase.cpp 中

@@ -1,6 +1,6 @@
 ﻿/*
- *  File: ContentDialog.h
- *  Copyright (c) 2023 Sinflower
+ *  File: CustomControls.h
+ *  Copyright (c) 2025 vagmr
  *
  *  MIT License
  *
@@ -26,56 +26,12 @@
 
 #pragma once
 
-// Exclude rarely-used stuff from Windows headers
-#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
-#include <filesystem>
-#include <mutex>
-#include <string>
-
+#include "UIStyles.h"
 #include "WindowBase.h"
-#include "OptionDialog.h"
-#include "PackConfig.h"
 
-namespace fs = std::filesystem;
+// 自定义按钮绘制处理程序
+LRESULT CALLBACK CustomButtonProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData);
 
-// 前向声明
-class OptionDialog;
-class PackConfig;
-
-// 拖放区域处理程序声明
+// 拖放区域处理程序
 LRESULT CALLBACK DropZoneProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData);
-
-class ContentDialog : public WindowBase
-{
-public:
-    ContentDialog(const HINSTANCE hInstance, const HWND hWndParent);
-    ~ContentDialog();
-
-    void SetupLog();
-
-protected:
-    void applyModernStyles();
-    void updateLocalization() override;
-
-private:
-    void adjustButton(const int32_t& buttonID);
-    void setButtonStates(const BOOL& en);
-    void adjustLabelEditComb(const int32_t& labelID, const int32_t& editID);
-    void onOptionsClicked();
-    void onPackClicked();
-    void onSelectGameClicked();
-    void onProcessClicked();
-    void onDropFile(void* p);
-    void addLogEntry(const std::wstring& entry, const bool& addNewline = true);
-    fs::path getExePath() const;
-
-    static void updateLoc(HWND hWnd);
-    static INT_PTR CALLBACK wndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
-private:
-    OptionDialog m_optionsDialog;
-    PackConfig m_packConfig;
-    std::mutex m_mutex;
-    std::size_t m_logIndex = -1;
-};

@@ -168,6 +168,7 @@
   <ItemGroup>
     <ClInclude Include="ConfigManager.h" />
     <ClInclude Include="ContentDialog.h" />
+    <ClInclude Include="CustomControls.h" />
     <ClInclude Include="Localizer.h" />
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="OptionDialog.h" />
@@ -175,10 +176,17 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SlotWrapper.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="UIStyles.h" />
+    <ClInclude Include="Utils.h" />
     <ClInclude Include="WindowBase.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ContentDialog.cpp" />
+    <ClCompile Include="CustomControls.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="UIStyles.cpp" />
+    <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="WindowBase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="UberWolf.rc" />

@@ -9,6 +9,7 @@
 	"process": "处理/解包",
 	"pack": "打包",
 	"select_game": "选择文件",
+	"select_game_title": "选择游戏文件",
 	"game_location": "文件路径",
 	"protection_key": "保护密钥(如有)",
 	"open_file": "打开文件",

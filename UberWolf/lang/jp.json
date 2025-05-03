@@ -8,6 +8,7 @@
 "cancel": "キャンセル",
 "process":"実行",
 "select_game": "ゲーム選択",
+"select_game_title": "ゲームファイルを選択",
 "game_location":"ゲームの位置",
 "protection_key": "保護キー",
 "open_file": "ファイルを開く",
