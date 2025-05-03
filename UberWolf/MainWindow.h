@@ -29,6 +29,7 @@
 // Exclude rarely-used stuff from Windows headers
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#include <locale>
 
 #include "Localizer.h"
 #include "WindowBase.h"
@@ -64,7 +65,25 @@ public:
 
 		initLanguages();
 
-		onLanguageChanged(reinterpret_cast<void*>(static_cast<DWORD_PTR>(getSaveValue<int32_t>("language", DEFAULT_LANG_ID))));
+		// 获取保存的语言设置，如果没有保存过，则使用系统语言
+		int32_t savedLangId = getSaveValue<int32_t>("language", -1);
+		if (savedLangId == -1) {
+			// 使用系统语言
+			std::string sysLangCode = getSystemLanguageCode();
+			
+			for (const auto& [menuId, langCode] : m_menuLangStrMap) {
+				if (langCode == sysLangCode) {
+					savedLangId = menuId;
+					break;
+				}
+			}
+			// 如果没有找到对应的语言，使用默认语言
+			if (savedLangId == -1) {
+				savedLangId = DEFAULT_LANG_ID;
+			}
+		}
+
+		onLanguageChanged(reinterpret_cast<void*>(static_cast<DWORD_PTR>(savedLangId)));
 
 		return true;
 	}
@@ -158,6 +177,31 @@ private:
 
 		// Replace the language menu with the new one
 		ModifyMenuW(hMenu, LANGUAGE_MENU_IDX, MF_BYPOSITION | MF_POPUP, (UINT_PTR)hLangMenu, LOCW("language"));
+	}
+
+	// 获取系统语言代码
+	std::string getSystemLanguageCode()
+	{
+		// 获取系统默认语言ID
+		LANGID langId = GetUserDefaultUILanguage();
+
+		// 提取主语言ID
+		LANGID primaryLangId = PRIMARYLANGID(langId);
+
+		// 将语言ID映射到语言代码
+		switch (primaryLangId) {
+			case LANG_CHINESE:
+				return "cn";
+			case LANG_ENGLISH:
+				return "en";
+			case LANG_JAPANESE:
+				return "jp";
+			case LANG_KOREAN:
+				return "ko";
+			
+			default:
+				return "en"; // 默认使用英语
+		}
 	}
 
 	void onLanguageChanged(void* langID)
