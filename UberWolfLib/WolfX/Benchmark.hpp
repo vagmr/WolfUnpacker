@@ -1,6 +1,6 @@
-﻿/*
- *  File: WindowBase.cpp
- *  Copyright (c) 2025 vagmr
+/*
+ *  File: Benchmark.hpp
+ *  Copyright (c) 2025 Sinflower
  *
  *  MIT License
  *
@@ -24,9 +24,18 @@
  *
  */
 
-#include "WindowBase.h"
+#pragma once
 
-// 静态成员变量的定义
-int32_t WindowBase::s_idCounter = 0;
-std::map<HWND, class WindowBase*> WindowBase::s_windowMap;
-std::vector<class WindowBase*> WindowBase::s_localizedWindowList;
+#include <string>
+
+#include "detail/BenchmarkDetail.hpp"
+
+namespace wolfx::benchmark
+{
+
+inline void benchmark(const std::string &filename)
+{
+	detail::benchmark::benchmark(filename);
+}
+
+} // namespace wolfx::benchmark

@@ -41,6 +41,9 @@
 #include "Utils.h"
 #include "WolfUtils.h"
 
+#include "Wolf35Unprotect.hpp"
+#include "WolfXWrapper.h"
+
 namespace fs = std::filesystem;
 
 namespace ProtKey
@@ -95,7 +98,7 @@ WolfPro::WolfPro(const tString& dataFolder, const bool& dataInBaseFolder) :
 	if (!fs::exists(m_dataFolder))
 	{
 		m_dataFolder = TEXT("");
-		ERROR_LOG << std::format(TEXT("ERROR: Data folder \"{}\" does not exist, exiting ..."), m_dataFolder) << std::endl;
+		ERROR_LOG << std::format(TEXT("ERROR: Data folder \"{}\" does not exist, stopping ..."), m_dataFolder) << std::endl;
 		return;
 	}
 
@@ -103,7 +106,7 @@ WolfPro::WolfPro(const tString& dataFolder, const bool& dataInBaseFolder) :
 	if (!fs::is_directory(m_dataFolder))
 	{
 		m_dataFolder = TEXT("");
-		ERROR_LOG << std::format(TEXT("ERROR: Data folder \"{}\" is not a directory, exiting ..."), m_dataFolder) << std::endl;
+		ERROR_LOG << std::format(TEXT("ERROR: Data folder \"{}\" is not a directory, stopping ..."), m_dataFolder) << std::endl;
 		return;
 	}
 
@@ -122,7 +125,7 @@ WolfPro::WolfPro(const tString& dataFolder, const bool& dataInBaseFolder) :
 
 	if (m_dxArcKeyFile.empty())
 	{
-		ERROR_LOG << LOCALIZE("key_file_warn_msg") << std::endl;
+		// ERROR_LOG << LOCALIZE("key_file_warn_msg") << std::endl;
 		return;
 	}
 	else
@@ -138,7 +141,7 @@ Key WolfPro::GetProtectionKey()
 
 	Key key = findProtectionKey(m_protKeyFile);
 
-	if (!validateProtectionKey(key))
+	if (m_proVersion != 3 && !validateProtectionKey(key))
 	{
 		ERROR_LOG << LOCALIZE("inv_prot_key_error_msg") << std::endl;
 		return Key();
@@ -215,6 +218,12 @@ bool WolfPro::RemoveProtection()
 	// TODO: Implement this
 	if (m_proVersion == 2) return false;
 
+	if (m_proVersion == 3)
+	{
+		wolf::v3_5::unprotect::unprotectProFiles(m_dataFolder + L"BasicData");
+		return true;
+	}
+
 	// Check if the unprotected folder exists in the data folder and create it if it doesn't
 	if (!fs::exists(m_unprotectedFolder))
 	{
@@ -238,6 +247,23 @@ bool WolfPro::RemoveProtection()
 	INFO_LOG << vFormat(LOCALIZE("unprot_file_loc"), m_unprotectedFolder) << std::endl;
 
 	return true;
+}
+
+bool WolfPro::DecryptWolfXFiles()
+{
+	if (m_dataFolder.empty())
+	{
+		ERROR_LOG << LOCALIZE("data_dir_error_msg") << std::endl;
+		return false;
+	}
+
+	tString dataFolder = m_dataFolder;
+
+	if (m_dataInBaseFolder)
+		dataFolder = m_dataFolder + TEXT("/") + GetWolfDataFolder();
+
+	WolfXWrapper wolfXWrapper(dataFolder);
+	return wolfXWrapper.DecryptAll();
 }
 
 /////////////////////////////////////////
@@ -318,16 +344,29 @@ Key WolfPro::findProtectionKey(const tString& filePath)
 
 	if (!readFile(filePath, bytes, fileSize)) return Key();
 
-	if (bytes[1] == 0x50 && bytes[5] == 0x55)
+	if (bytes[1] == 0x50)
 	{
-		m_proVersion = 2;
-		return findProtectionKeyV2(bytes);
+		if (bytes[5] == 0x55)
+		{
+			m_proVersion = 2;
+			return findProtectionKeyV2(bytes);
+		}
+		else if (bytes[5] >= 0x57)
+		{
+			// For v3 it is not possible to determine the key as only a hash is stored
+			m_proVersion = 3;
+
+			std::string notPossible = "NOT POSSIBLE FOR WolfRPG v3.5";
+			return Key({ notPossible.begin(), notPossible.end() });
+		}
 	}
 	else
 	{
 		m_proVersion = 1;
 		return findProtectionKeyV1(bytes);
 	}
+
+	return Key();
 }
 
 Key WolfPro::findProtectionKeyV1(std::vector<uint8_t>& byteData) const

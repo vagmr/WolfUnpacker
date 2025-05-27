@@ -51,6 +51,11 @@ public:
 		return m_isWolfPro;
 	}
 
+	void SetProtKeyFile(const tString& protKeyFile)
+	{
+		m_protKeyFile = protKeyFile;
+	}
+
 	Key GetProtectionKey();
 	Key GetDxArcKey();
 	bool RecheckProtFileState();
@@ -62,6 +67,7 @@ public:
 	}
 
 	bool RemoveProtection();
+	bool DecryptWolfXFiles();
 
 private:
 	Key findProtectionKey(const tString& filePath);

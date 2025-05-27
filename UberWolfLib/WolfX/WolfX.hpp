@@ -1,6 +1,6 @@
 ﻿/*
- *  File: CustomControls.h
- *  Copyright (c) 2025 vagmr
+ *  File: WolfX.hpp
+ *  Copyright (c) 2025 Sinflower
  *
  *  MIT License
  *
@@ -26,12 +26,7 @@
 
 #pragma once
 
-#include <Windows.h>
-#include "UIStyles.h"
-#include "WindowBase.h"
-
-// 自定义按钮绘制处理程序
-LRESULT CALLBACK CustomButtonProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData);
-
-// 拖放区域处理程序
-LRESULT CALLBACK DropZoneProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData);
+#include "Benchmark.hpp"
+#include "Crack.hpp"
+#include "Types.hpp"
+#include "Utils.hpp"

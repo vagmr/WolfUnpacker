@@ -1,6 +1,6 @@
 ﻿/*
- *  File: Utils.h
- *  Copyright (c) 2025 vagmr
+ *  File: Validate.hpp
+ *  Copyright (c) 2025 Sinflower
  *
  *  MIT License
  *
@@ -26,14 +26,17 @@
 
 #pragma once
 
-#include <Windows.h>
-#include <string>
+#include "detail/ValidateDetail.hpp"
 
-namespace Utils
+namespace wolfx::validate
 {
-    // 替换字符串中的所有指定子串
-    std::wstring ReplaceAll(const std::wstring& str, const std::wstring& from, const std::wstring& to);
-    
-    // 打开文件选择对话框
-    bool OpenFile(HWND hwndParent, LPTSTR lpstrFile, LPCTSTR lpstrFilter, LPCTSTR lpstrTitle);
+inline bool validateChecksum(const uint8_t *pData, const std::size_t &dataSize, const std::array<uint8_t, 5> &realChecksum, const bool &verbose = false)
+{
+	return detail::validate::validateChecksum(pData, dataSize, realChecksum, verbose);
 }
+
+inline bool validateChecksum(const std::vector<uint8_t> &data, const std::array<uint8_t, 5> &realChecksum, const bool &verbose = false)
+{
+	return detail::validate::validateChecksum(data, realChecksum, verbose);
+}
+} // namespace wolfx::validate
