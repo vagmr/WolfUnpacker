@@ -497,3 +497,15 @@ bool UberWolfLib::findGameFromArchive(const tString& archivePath)
 	return false;
 }
 
+// 静态变量定义 - 避免重复定义问题
+#include "WolfRPG/FileCoder.h"
+#include "WolfRPG/Command.h"
+
+// FileCoder静态变量定义
+bool FileCoder::s_isUTF8 = false;
+uint32_t FileCoder::s_projKey = static_cast<uint32_t>(-1);
+bool FileCoder::s_createBackup = false;
+
+// Command命名空间中的Command类的静态变量定义
+bool Command::Command::s_v35 = false;
+

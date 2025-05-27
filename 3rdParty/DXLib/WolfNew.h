@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  File: WolfNew.h
  *  Copyright (c) 2024 Sinflower
  *
@@ -1164,7 +1164,9 @@ inline void chacha20_xor(uint32_t *pState, uint32_t *pKeyStream, const uint32_t 
 
 	while (position < length)
 	{
-		uint32_t steps = static_cast<uint32_t>(std::min(64 - offset, length - position));
+		uint64_t remaining = static_cast<uint64_t>(64) - offset;
+		uint64_t available = length - position;
+		uint32_t steps = static_cast<uint32_t>(remaining < available ? remaining : available);
 		chacha20_block_next(pState, pKeyStream);
 
 		for (uint32_t i = 0; i < steps; i++)

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  File: Localizer.h
  *  Copyright (c) 2024 Sinflower
  *
@@ -36,6 +36,13 @@
 #include <string>
 
 #include "resource.h"
+
+// 定义 tString 类型以支持 Unicode/ANSI 兼容
+#ifdef UNICODE
+using tString = std::wstring;
+#else
+using tString = std::string;
+#endif
 
 #define LOC(_STR_)                  Localizer::GetInstance().GetValue(_STR_)
 #define LOCW(_STR_)                 Localizer::GetInstance().GetValueW(_STR_)

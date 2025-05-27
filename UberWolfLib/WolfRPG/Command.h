@@ -443,8 +443,6 @@ protected:
 	static const uint8_t TERMINATOR = 0x0;
 };
 
-bool Command::s_v35 = false;
-
 namespace CommandSpecialClasses
 {
 class Picture : public Command

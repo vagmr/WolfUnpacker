@@ -89,16 +89,16 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>..\UberWolfLib\;..\3rdParty</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>..\UberWolfLib\;..\3rdParty;..\3rdParty\FLTK\include</AdditionalIncludeDirectories>
       <ExceptionHandling>Async</ExceptionHandling>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)build\$(Platform)\$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>UberWolfLib.lib;UberWolfLib.res;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)build\$(Platform)\$(Configuration);..\3rdParty\FLTK\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>UberWolfLib.lib;UberWolfLib.res;fltk.lib;fltk_images.lib;fltk_png.lib;fltk_z.lib;fltk_jpeg.lib;ole32.lib;uuid.lib;comctl32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
   </ItemDefinitionGroup>
@@ -110,10 +110,10 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>..\UberWolfLib\;..\3rdParty</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>..\UberWolfLib\;..\3rdParty;..\3rdParty\FLTK\include</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <ExceptionHandling>Async</ExceptionHandling>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
@@ -122,8 +122,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)build\$(Platform)\$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>UberWolfLib.lib;UberWolfLib.res;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)build\$(Platform)\$(Configuration);..\3rdParty\FLTK\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>UberWolfLib.lib;UberWolfLib.res;fltk.lib;fltk_images.lib;fltk_png.lib;fltk_z.lib;fltk_jpeg.lib;ole32.lib;uuid.lib;comctl32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
   </ItemDefinitionGroup>
@@ -133,16 +133,16 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>..\UberWolfLib\;..\3rdParty</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>..\UberWolfLib\;..\3rdParty;..\3rdParty\FLTK\include</AdditionalIncludeDirectories>
       <ExceptionHandling>Async</ExceptionHandling>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)build\$(Platform)\$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>UberWolfLib.lib;UberWolfLib.res;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)build\$(Platform)\$(Configuration);..\3rdParty\FLTK\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>UberWolfLib.lib;UberWolfLib.res;fltk.lib;fltk_images.lib;fltk_png.lib;fltk_z.lib;fltk_jpeg.lib;ole32.lib;uuid.lib;comctl32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -153,10 +153,10 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>..\UberWolfLib\;..\3rdParty</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>..\UberWolfLib\;..\3rdParty;..\3rdParty\FLTK\include</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <ExceptionHandling>Async</ExceptionHandling>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
@@ -165,24 +165,22 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)build\$(Platform)\$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>UberWolfLib.lib;UberWolfLib.res;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)build\$(Platform)\$(Configuration);..\3rdParty\FLTK\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>UberWolfLib.lib;UberWolfLib.res;fltk.lib;fltk_images.lib;fltk_png.lib;fltk_z.lib;fltk_jpeg.lib;ole32.lib;uuid.lib;comctl32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ConfigManager.h" />
-    <ClInclude Include="ContentDialog.h" />
+    <ClInclude Include="FltkMainWindow.h" />
     <ClInclude Include="Localizer.h" />
-    <ClInclude Include="MainWindow.h" />
-    <ClInclude Include="OptionDialog.h" />
-    <ClInclude Include="PackConfig.h" />
-    <ClInclude Include="Resource.h" />
-    <ClInclude Include="SlotWrapper.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="WindowBase.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="FltkMainWindow.cpp" />
+    <ClCompile Include="FltkMainWindow_Events.cpp" />
+    <ClCompile Include="FltkMainWindow_WolfTL.cpp" />
+    <ClCompile Include="FltkMainWindow_Operations.cpp" />
+    <ClCompile Include="main_fltk.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="UberWolf.rc" />

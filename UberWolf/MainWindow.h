@@ -64,7 +64,21 @@ public:
 
 		initLanguages();
 
-		onLanguageChanged(reinterpret_cast<void*>(static_cast<DWORD_PTR>(getSaveValue<int32_t>("language", DEFAULT_LANG_ID))));
+		// Auto-detect system language if no language preference is saved
+		int32_t savedLangId = getSaveValue<int32_t>("language", -1);
+		if (savedLangId == -1)
+		{
+			// First time startup - detect system language
+			std::string systemLangCode = getSystemLanguageCode();
+			savedLangId = getLanguageIdFromCode(systemLangCode);
+		}
+		else if (savedLangId < ID_LANGUAGE_EN)
+		{
+			// Invalid saved value - use default
+			savedLangId = DEFAULT_LANG_ID;
+		}
+
+		onLanguageChanged(reinterpret_cast<void*>(static_cast<DWORD_PTR>(savedLangId)));
 
 		return true;
 	}
@@ -89,6 +103,38 @@ private:
 		wcex.hIconSm       = NULL;
 
 		RegisterClassExW(&wcex);
+	}
+
+	// Get system language and map to supported language code
+	std::string getSystemLanguageCode()
+	{
+		LANGID langId = GetSystemDefaultUILanguage();
+		WORD primaryLang = PRIMARYLANGID(langId);
+
+		// Map Windows language IDs to our supported language codes
+		switch (primaryLang)
+		{
+			case LANG_CHINESE:
+				return "cn";
+			case LANG_JAPANESE:
+				return "jp";
+			case LANG_KOREAN:
+				return "ko";
+			case LANG_ENGLISH:
+			default:
+				return "en"; // Default to English for unsupported languages
+		}
+	}
+
+	// Get the language menu ID for a given language code
+	int32_t getLanguageIdFromCode(const std::string& langCode)
+	{
+		for (const auto& pair : m_menuLangStrMap)
+		{
+			if (pair.second == langCode)
+				return pair.first;
+		}
+		return DEFAULT_LANG_ID; // Return default if not found
 	}
 
 	void initLanguages()

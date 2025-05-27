@@ -126,7 +126,7 @@
       <AdditionalIncludeDirectories>..\3rdParty;</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DebugInformationFormat>None</DebugInformationFormat>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <ExceptionHandling>Async</ExceptionHandling>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
@@ -181,7 +181,7 @@
       <AdditionalIncludeDirectories>..\3rdParty;</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DebugInformationFormat>None</DebugInformationFormat>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <ExceptionHandling>Async</ExceptionHandling>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
@@ -211,6 +211,7 @@
     <ClCompile Include="UberWolfLib.cpp" />
     <ClCompile Include="WolfDec.cpp" />
     <ClCompile Include="WolfPro.cpp" />
+    <ClCompile Include="WolfTL.cpp" />
     <ClCompile Include="WolfUtils.cpp" />
     <ClCompile Include="WolfXWrapper.cpp" />
   </ItemGroup>
@@ -242,6 +243,7 @@
     <ClInclude Include="WolfRPG\FileCoder.h" />
     <ClInclude Include="WolfRPG\GameDat.h" />
     <ClInclude Include="WolfRPG\Map.h" />
+    <ClInclude Include="WolfRPG\NewWolfCrypt.h" />
     <ClInclude Include="WolfRPG\RouteCommand.h" />
     <ClInclude Include="WolfRPG\Types.h" />
     <ClInclude Include="WolfRPG\WolfDataBase.h" />
@@ -249,6 +251,7 @@
     <ClInclude Include="WolfRPG\WolfRPGException.h" />
     <ClInclude Include="WolfRPG\WolfRPGUtils.h" />
     <ClInclude Include="WolfSha512.hpp" />
+    <ClInclude Include="WolfTL.h" />
     <ClInclude Include="WolfUtils.h" />
     <ClInclude Include="WolfXWrapper.h" />
     <ClInclude Include="WolfX\Benchmark.hpp" />

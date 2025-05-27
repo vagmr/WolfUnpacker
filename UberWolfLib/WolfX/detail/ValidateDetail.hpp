@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  File: ValidateDetail.hpp
  *  Copyright (c) 2025 Sinflower
  *

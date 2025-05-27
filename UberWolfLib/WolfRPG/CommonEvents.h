@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  File: CommonEvents.h
  *  Copyright (c) 2024 Sinflower
  *

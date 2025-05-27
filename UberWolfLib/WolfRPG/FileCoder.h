@@ -613,7 +613,3 @@ private:
 	static uint32_t s_projKey;
 	static bool s_createBackup;
 };
-
-bool FileCoder::s_isUTF8       = false;
-uint32_t FileCoder::s_projKey  = -1;
-bool FileCoder::s_createBackup = false;

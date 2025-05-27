@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  File: Benchmark.hpp
  *  Copyright (c) 2025 Sinflower
  *
