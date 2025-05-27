@@ -13,7 +13,7 @@
 #ifdef _WIN32
 #include <windows.h>
 #endif
-
+#pragma execution_character_set("utf-8")
 // === 解密操作实现 ===
 void FltkMainWindow::onDecrypt()
 {
@@ -311,18 +311,24 @@ void FltkMainWindow::loadSettings()
 {
     // 加载语言设置
     int savedLangId = ConfigManager::GetInstance().GetValue(0, "language", -1);
+    std::cout << "Loading settings: savedLangId=" << savedLangId << std::endl;
+
     if (savedLangId == -1)
     {
         // 首次启动 - 检测系统语言
         std::string systemLangCode = getSystemLanguageCode();
+        std::cout << "First startup, detected system language: " << systemLangCode << std::endl;
         savedLangId = getLanguageIdFromCode(systemLangCode);
+        std::cout << "Mapped to language ID: " << savedLangId << std::endl;
     }
     else if (savedLangId < 15000)
     {
         // 无效的保存值 - 使用默认值
+        std::cout << "Invalid saved language ID, using default English" << std::endl;
         savedLangId = 15000; // 默认英语
     }
 
+    std::cout << "Final language ID to load: " << savedLangId << std::endl;
     onLanguageChanged(savedLangId);
 
     // 更新语言选择控件
@@ -356,20 +362,21 @@ void FltkMainWindow::saveSettings()
 {
     ConfigManager::GetInstance().SetValue(0, "language", m_currentLanguageId);
 
+    // 修复：将FLTK控件的整数值转换为布尔值
     if (m_overwriteCheck)
-        ConfigManager::GetInstance().SetValue(0, "overwrite_files", m_overwriteCheck->value());
+        ConfigManager::GetInstance().SetValue(0, "overwrite_files", static_cast<bool>(m_overwriteCheck->value()));
 
     if (m_unprotectCheck)
-        ConfigManager::GetInstance().SetValue(0, "remove_protection", m_unprotectCheck->value());
+        ConfigManager::GetInstance().SetValue(0, "remove_protection", static_cast<bool>(m_unprotectCheck->value()));
 
     if (m_decWolfXCheck)
-        ConfigManager::GetInstance().SetValue(0, "decrypt_wolfx", m_decWolfXCheck->value());
+        ConfigManager::GetInstance().SetValue(0, "decrypt_wolfx", static_cast<bool>(m_decWolfXCheck->value()));
 
     if (m_skipGameDatCheck)
-        ConfigManager::GetInstance().SetValue(0, "skip_gamedat", m_skipGameDatCheck->value());
+        ConfigManager::GetInstance().SetValue(0, "skip_gamedat", static_cast<bool>(m_skipGameDatCheck->value()));
 
     if (m_createBackupCheck)
-        ConfigManager::GetInstance().SetValue(0, "create_backup", m_createBackupCheck->value());
+        ConfigManager::GetInstance().SetValue(0, "create_backup", static_cast<bool>(m_createBackupCheck->value()));
 }
 
 std::string FltkMainWindow::getSystemLanguageCode()
@@ -381,27 +388,38 @@ std::string FltkMainWindow::getSystemLanguageCode()
     WORD primaryLang = PRIMARYLANGID(langId);
     WORD subLang = SUBLANGID(langId);
 
+    // 添加调试信息
+    std::cout << "System Language Detection: LANGID=" << langId
+              << ", Primary=" << primaryLang << ", Sub=" << subLang << std::endl;
+
     switch (primaryLang)
     {
     case LANG_CHINESE:
         // 区分简体中文和繁体中文
+        std::cout << "Detected Chinese language, sublang=" << subLang << std::endl;
         switch (subLang)
         {
         case SUBLANG_CHINESE_SIMPLIFIED:
         case SUBLANG_CHINESE_SINGAPORE:
+            std::cout << "Returning Chinese Simplified (cn)" << std::endl;
             return "cn";
         case SUBLANG_CHINESE_TRADITIONAL:
         case SUBLANG_CHINESE_HONGKONG:
         case SUBLANG_CHINESE_MACAU:
+            std::cout << "Returning Chinese Traditional (tw)" << std::endl;
             return "tw"; // 繁体中文，如果支持的话
         default:
+            std::cout << "Returning Chinese Simplified (cn) as default" << std::endl;
             return "cn"; // 默认简体中文
         }
     case LANG_JAPANESE:
+        std::cout << "Returning Japanese (jp)" << std::endl;
         return "jp";
     case LANG_KOREAN:
+        std::cout << "Returning Korean (ko)" << std::endl;
         return "ko";
     case LANG_ENGLISH:
+        std::cout << "Returning English (en)" << std::endl;
         return "en";
     default:
         // 尝试获取更详细的语言信息

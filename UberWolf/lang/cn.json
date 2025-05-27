@@ -58,5 +58,21 @@
 	"unprot_file_loc": "解除保护的文件已被提取到: {}",
 	"remove_prot": "正在解除文件保护: {} ... ",
 	"calc_prot_key_error_msg": "ERROR: 无法推算保护密钥",
-	"dec_wolfx_label": "Decrypt WolfX files"
+	"dec_wolfx_label": "解密WolfX文件",
+	"decrypt_tab": "解密",
+	"translate_tab": "翻译",
+	"pack_tab": "打包",
+	"settings_tab": "设置",
+	"file": "文件",
+	"tools": "工具",
+	"help": "帮助",
+	"about": "关于",
+	"open_game": "打开游戏",
+	"open_project": "打开项目",
+	"exit": "退出",
+	"decrypt_game": "解密游戏",
+	"extract_translation": "提取翻译",
+	"apply_translation": "应用翻译",
+	"pack_game": "打包游戏",
+	"ready": "就绪"
 }

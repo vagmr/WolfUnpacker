@@ -16,7 +16,7 @@
 #include <codecvt>
 // 暂时不使用WolfTLWrapper，直接使用WolfTL
 #include "WolfTL.h"
-
+#pragma execution_character_set("utf-8")
 // === WolfTL相关方法实现 ===
 void FltkMainWindow::onExtractTranslation()
 {

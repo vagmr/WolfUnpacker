@@ -9,7 +9,7 @@
 #include <FL/fl_message.H>
 #include <filesystem>
 #include <thread>
-
+#pragma execution_character_set("utf-8")
 // === 静态回调函数实现 ===
 void FltkMainWindow::languageCallback(Fl_Widget* w, void* data)
 {
@@ -81,21 +81,33 @@ void FltkMainWindow::onLanguageChanged(int langId)
 {
     m_currentLanguageId = langId;
 
+    std::cout << "Language change requested: langId=" << langId << std::endl;
+
     if (m_languageMap.find(langId) != m_languageMap.end())
     {
         try
         {
             std::string langCode = m_languageMap[langId];
+            std::cout << "Loading language: " << langCode << std::endl;
+
             LOC_LOAD(langCode);
             UpdateLocalization();
 
             ConfigManager::GetInstance().SetValue(0, "language", langId);
             addLogEntry("Language changed to: " + langCode);
+
+            std::cout << "Language change completed successfully" << std::endl;
         }
         catch (const std::exception& e)
         {
+            std::cout << "Language change failed: " << e.what() << std::endl;
             addLogEntry("Failed to change language: " + std::string(e.what()));
         }
+    }
+    else
+    {
+        std::cout << "Language ID not found in map: " << langId << std::endl;
+        addLogEntry("Unknown language ID: " + std::to_string(langId));
     }
 }
 

@@ -58,5 +58,21 @@
 	"unprot_file_loc": "Unprotected files can be found in: {}",
 	"remove_prot": "Removing protection from: {} ... ",
 	"calc_prot_key_error_msg": "ERROR: Unable to calculate protection key",
-	"dec_wolfx_label": "Decrypt WolfX files"
+	"dec_wolfx_label": "Decrypt WolfX files",
+	"decrypt_tab": "Decrypt",
+	"translate_tab": "Translate",
+	"pack_tab": "Pack",
+	"settings_tab": "Settings",
+	"file": "File",
+	"tools": "Tools",
+	"help": "Help",
+	"about": "About",
+	"open_game": "Open Game",
+	"open_project": "Open Project",
+	"exit": "Exit",
+	"decrypt_game": "Decrypt Game",
+	"extract_translation": "Extract Translation",
+	"apply_translation": "Apply Translation",
+	"pack_game": "Pack Game",
+	"ready": "Ready"
 }

@@ -121,19 +121,30 @@ void FltkMainWindow::initializeLocalization()
     // 初始化本地化系统
     try
     {
-        // 获取可用语言列表
-        std::vector<uint16_t> langIDs = { 135, 136, 137, 138 }; // 对应资源ID
+        // 获取可用语言列表 - 修正资源ID与语言代码的对应关系
+        // 135=EN, 136=JP, 137=KO, 138=CN
+        std::vector<std::pair<uint16_t, std::string>> langMappings = {
+            {135, "en"},  // 英语
+            {138, "cn"},  // 中文 - 修正：应该对应资源138
+            {136, "jp"},  // 日语 - 修正：应该对应资源136
+            {137, "ko"}   // 韩语 - 修正：应该对应资源137
+        };
 
-        for (size_t i = 0; i < langIDs.size() && i < 4; ++i)
+        for (size_t i = 0; i < langMappings.size(); ++i)
         {
             int langId = 15000 + static_cast<int>(i);
+            uint16_t resId = langMappings[i].first;
+            std::string expectedLangCode = langMappings[i].second;
+
             Localizer::LocMap locMap;
 
             // 从资源加载本地化数据
-            if (Localizer::ReadLocalizationFromResource(langIDs[i], locMap))
+            if (Localizer::ReadLocalizationFromResource(resId, locMap))
             {
                 std::string langCode = m_languageMap[langId];
-                LOC_ADD_LANG(langCode, langIDs[i]);
+                std::cout << "Loading resource " << resId << " for langId " << langId
+                         << " (expected: " << expectedLangCode << ", mapped: " << langCode << ")" << std::endl;
+                LOC_ADD_LANG(langCode, resId);
             }
         }
 
@@ -202,9 +213,9 @@ void FltkMainWindow::initializeMenuBar()
 
 void FltkMainWindow::initializeTabs()
 {
-    // 创建标签页容器 - 优化布局
-    int tab_y = 35;  // 菜单栏下方
-    int tab_h = h() - 140; // 为底部状态栏和日志区域留空间
+    // 创建标签页容器 - 优化布局，增加顶部间距
+    int tab_y = 40;  // 菜单栏下方，增加间距避免重叠
+    int tab_h = h() - 145; // 为底部状态栏和日志区域留空间
 
     m_tabs = std::make_unique<Fl_Tabs>(10, tab_y, w() - 20, tab_h);
     m_tabs->box(FL_THIN_UP_BOX);
@@ -222,8 +233,8 @@ void FltkMainWindow::initializeTabs()
 void FltkMainWindow::initializeDecryptTab()
 {
     // 解密标签页 - 优化布局
-    int tab_x = 15, tab_y = 60, tab_w = w() - 30, tab_h = h() - 145;
-    m_decryptTab = std::make_unique<Fl_Group>(tab_x, tab_y, tab_w, tab_h, "🔓 Decrypt");
+    int tab_x = 15, tab_y = 65, tab_w = w() - 30, tab_h = h() - 150;
+    m_decryptTab = std::make_unique<Fl_Group>(tab_x, tab_y, tab_w, tab_h, "Decrypt");
     m_decryptTab->begin();
 
     int content_x = tab_x + 10, content_y = tab_y + 30;
@@ -286,8 +297,8 @@ void FltkMainWindow::initializeDecryptTab()
 void FltkMainWindow::initializeTranslateTab()
 {
     // 翻译标签页 - 重点加入WolfTL功能
-    int tab_x = 15, tab_y = 60, tab_w = w() - 30, tab_h = h() - 145;
-    m_translateTab = std::make_unique<Fl_Group>(tab_x, tab_y, tab_w, tab_h, "🌐 Translate");
+    int tab_x = 15, tab_y = 65, tab_w = w() - 30, tab_h = h() - 150;
+    m_translateTab = std::make_unique<Fl_Group>(tab_x, tab_y, tab_w, tab_h, "Translate");
     m_translateTab->begin();
 
     int content_x = tab_x + 10, content_y = tab_y + 30;
@@ -367,8 +378,8 @@ void FltkMainWindow::initializeTranslateTab()
 void FltkMainWindow::initializePackTab()
 {
     // 打包标签页 - 优化布局
-    int tab_x = 15, tab_y = 60, tab_w = w() - 30, tab_h = h() - 145;
-    m_packTab = std::make_unique<Fl_Group>(tab_x, tab_y, tab_w, tab_h, "📦 Pack");
+    int tab_x = 15, tab_y = 65, tab_w = w() - 30, tab_h = h() - 150;
+    m_packTab = std::make_unique<Fl_Group>(tab_x, tab_y, tab_w, tab_h, "Pack");
     m_packTab->begin();
 
     int content_x = tab_x + 10, content_y = tab_y + 30;
@@ -431,19 +442,20 @@ void FltkMainWindow::initializePackTab()
 void FltkMainWindow::initializeSettingsTab()
 {
     // 设置标签页 - 优化布局
-    int tab_x = 15, tab_y = 60, tab_w = w() - 30, tab_h = h() - 145;
-    m_settingsTab = std::make_unique<Fl_Group>(tab_x, tab_y, tab_w, tab_h, "⚙️ Settings");
+    int tab_x = 15, tab_y = 65, tab_w = w() - 30, tab_h = h() - 150;
+    m_settingsTab = std::make_unique<Fl_Group>(tab_x, tab_y, tab_w, tab_h, "Settings");
     m_settingsTab->begin();
 
     int content_x = tab_x + 10, content_y = tab_y + 30;
     int content_w = tab_w - 20;
 
-    // 语言设置区域
+    // 语言设置区域 - 调整布局避免与标签页重叠
     Fl_Box* langLabel = new Fl_Box(content_x, content_y, 120, 25, "Interface Language:");
     langLabel->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
     langLabel->labelfont(FL_BOLD);
 
-    m_languageChoice = std::make_unique<Fl_Choice>(content_x + 125, content_y, 200, 25);
+    // 调整语言选择器位置，避免与标签页重叠
+    m_languageChoice = std::make_unique<Fl_Choice>(content_x + 125, content_y, 150, 25);
     m_languageChoice->box(FL_DOWN_BOX);
     m_languageChoice->add("English");
     m_languageChoice->add("中文");
@@ -451,7 +463,7 @@ void FltkMainWindow::initializeSettingsTab()
     m_languageChoice->add("한국어");
     m_languageChoice->callback(languageCallback, this);
 
-    content_y += 60;
+    content_y += 40; // 减少间距
 
     // 关于信息区域
     Fl_Box* aboutLabel = new Fl_Box(content_x, content_y, 200, 25, "About UberWolf:");
@@ -526,11 +538,11 @@ void FltkMainWindow::UpdateLocalization()
 {
     try
     {
-        // 更新标签页标题
-        if (m_decryptTab) m_decryptTab->label((std::string("🔓 ") + getLocalizedText("decrypt_tab")).c_str());
-        if (m_translateTab) m_translateTab->label((std::string("🌐 ") + getLocalizedText("translate_tab")).c_str());
-        if (m_packTab) m_packTab->label((std::string("📦 ") + getLocalizedText("pack_tab")).c_str());
-        if (m_settingsTab) m_settingsTab->label((std::string("⚙️ ") + getLocalizedText("settings_tab")).c_str());
+        // 更新标签页标题 - 移除emoji避免显示问题
+        if (m_decryptTab) m_decryptTab->label(getLocalizedText("decrypt_tab"));
+        if (m_translateTab) m_translateTab->label(getLocalizedText("translate_tab"));
+        if (m_packTab) m_packTab->label(getLocalizedText("pack_tab"));
+        if (m_settingsTab) m_settingsTab->label(getLocalizedText("settings_tab"));
 
         // 更新菜单栏
         if (m_menuBar)
